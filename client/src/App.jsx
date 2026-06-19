@@ -31,6 +31,10 @@ const lessons = [
   { id: "env", title: "🔐 المتغيرات", sub: "Environment" },
   { id: "errors", title: "⚠️ الأخطاء", sub: "Error Handling" },
   { id: "deploy", title: "🚀 نشر", sub: "Deployment" },
+  { id: "practice-methods", title: "🎯 تدريب Methods", sub: "تمرن على الـ 5 Methods" },
+  { id: "practice-crud", title: "🎯 تدريب CRUD", sub: "تمرن على CRUD كامل" },
+  { id: "practice-auth", title: "🎯 تدريب Auth", sub: "تمرن على المصادقة" },
+  { id: "practice-validation", title: "🎯 تدريب Validation", sub: "تمرن على التحقق" },
 ];
 
 export default function App() {
@@ -73,19 +77,19 @@ export default function App() {
 
         <main key={lesson}>
           {lesson === "intro" && <Intro />}
-          {lesson === "methods" && <Methods />}
+          {lesson === "methods" && <Methods onNavigate={setLesson} />}
           {lesson === "request" && <Request />}
           {lesson === "status" && <Status />}
-          {lesson === "crud" && <Crud />}
+          {lesson === "crud" && <Crud onNavigate={setLesson} />}
           {lesson === "middleware" && <Middleware />}
-          {lesson === "auth" && <Auth />}
+          {lesson === "auth" && <Auth onNavigate={setLesson} />}
           {lesson === "passwords" && <Passwords />}
           {lesson === "database" && <Database />}
           {lesson === "file" && <FileUpload />}
           {lesson === "pagination" && <Pagination />}
           {lesson === "search" && <Search />}
           {lesson === "ratelimit" && <RateLimit />}
-          {lesson === "validation" && <Validation />}
+          {lesson === "validation" && <Validation onNavigate={setLesson} />}
           {lesson === "caching" && <Caching />}
           {lesson === "versioning" && <Versioning />}
           {lesson === "webhooks" && <Webhooks />}
@@ -96,6 +100,10 @@ export default function App() {
           {lesson === "env" && <Env />}
           {lesson === "errors" && <Errors />}
           {lesson === "deploy" && <Deploy />}
+          {lesson === "practice-methods" && <PracticeMethods />}
+          {lesson === "practice-crud" && <PracticeCrud />}
+          {lesson === "practice-auth" && <PracticeAuth />}
+          {lesson === "practice-validation" && <PracticeValidation />}
         </main>
       </div>
     </div>
@@ -210,6 +218,118 @@ function Terminal({ method, url, body }) {
 function Tag({ label, desc, code }) {
   return <div className="tag-box"><span className="badge" style={{ background: "#6366f1" }}>{label}</span><strong>{desc}</strong><code>{code}</code></div>;
 }
+function TrainingLink({ onClick, label }) {
+  return <button className="training-link" onClick={onClick}>{label} ←</button>;
+}
+
+// ===== Question Banks for Quizzes =====
+const introQuestions = [
+  { q: "ما معنى API؟", options: ["واجهة برمجة التطبيقات", "تطبيق ويب", "قاعدة بيانات", "لغة برمجة"], correct: 0 },
+  { q: "أي من هذه مكونات API؟", options: ["Endpoint, Method, Headers, Body", "HTML, CSS, JS", "Table, Row, Column", "GET, POST, PUT"], correct: 0 },
+  { q: "ماذا يفعل Express.json()؟", options: ["يحول JSON لنص", "يقرأ JSON من الطلب", "يرسل رد JSON", "يحذف JSON"], correct: 1 },
+  { q: "أي دالة تشغل السيرفر؟", options: ["app.run()", "app.start()", "app.listen()", "app.serve()"], correct: 2 },
+  { q: "ما المنفذ الافتراضي في الأمثلة؟", options: ["3000", "5000", "8080", "8000"], correct: 1 },
+];
+const methodsQuestions = [
+  { q: "أي Method يجيب البيانات من السيرفر؟", options: ["GET", "POST", "PUT", "DELETE"], correct: 0 },
+  { q: "أي Method ينشئ مورداً جديداً؟", options: ["GET", "POST", "PUT", "PATCH"], correct: 1 },
+  { q: "ماذا يعني 201 Created؟", options: ["تم الحذف", "تم الإنشاء", "غير موجود", "خطأ"], correct: 1 },
+  { q: "أي Method يستبدل المورد بالكامل؟", options: ["PATCH", "POST", "PUT", "DELETE"], correct: 2 },
+  { q: "الفرق بين PUT و PATCH؟", options: ["PUT أسرع", "PUT يستبدل الكل، PATCH يحدث جزءاً", "PATCH أقوى", "ما في فرق"], correct: 1 },
+];
+const requestQuestions = [
+  { q: "أي قناة ترسل بها رقم المستخدم في الرابط؟", options: ["Body", "Query", "Params", "Headers"], correct: 2 },
+  { q: "أين تكتب بيانات الفلترة مثل page=2؟", options: ["Params", "Query", "Body", "Headers"], correct: 1 },
+  { q: "أين يرسل العميل التوكن؟", options: ["Body", "Query", "Params", "Headers"], correct: 3 },
+  { q: "أي Middleware ضروري لقراءة JSON؟", options: ["express.urlencoded()", "express.json()", "express.static()", "cors()"], correct: 1 },
+  { q: "ماذا يحتوي req.body؟", options: ["بيانات الرابط", "بيانات JSON المرسلة", "عنوان IP", "التاريخ"], correct: 1 },
+];
+const statusQuestions = [
+  { q: "200 OK يعني؟", options: ["تم إنشاء المورد", "الطلب نجح", "غير موجود", "خطأ"], correct: 1 },
+  { q: "أي رقم يدل على خطأ في السيرفر؟", options: ["400", "401", "500", "302"], correct: 2 },
+  { q: "404 يعني؟", options: ["تم الحذف", "غير موجود", "ممنوع", "خطأ في السيرفر"], correct: 1 },
+  { q: "أي Status Code يعود عند عدم التصريح (Unauthorized)؟", options: ["400", "401", "403", "405"], correct: 1 },
+  { q: "ماذا تعرف عن Status Code 201؟", options: ["OK", "Created", "No Content", "Moved"], correct: 1 },
+];
+const crudQuestions = [
+  { q: "CRUD اختصار لـ:", options: ["Create, Run, Update, Delete", "Create, Read, Update, Delete", "Copy, Run, Upload, Drop", "Create, Read, Upload, Drop"], correct: 1 },
+  { q: "أي عملية في CRUD يقابلها GET؟", options: ["Create", "Read", "Update", "Delete"], correct: 1 },
+  { q: "أي Status Code يعود عند إنشاء مهمة جديدة؟", options: ["200", "201", "204", "301"], correct: 1 },
+  { q: "ماذا يفعل PATCH في تطبيق المهام؟", options: ["يمسح المهمة", "يغير حالة الإنجاز", "يضيف مهمة", "يجيب المهام"], correct: 1 },
+  { q: "أي Method يقابل Delete في CRUD؟", options: ["GET", "POST", "PUT", "DELETE"], correct: 3 },
+];
+const middlewareQuestions = [
+  { q: "ماذا يفعل Middleware؟", options: ["ينهي الطلب فوراً", "ينفذ قبل الـ Route ويمرر الطلب", "يرسل الرد", "يتصل بقاعدة البيانات"], correct: 1 },
+  { q: "أي دالة تمرر الطلب للـ Middleware التالي؟", options: ["pass()", "next()", "continue()", "forward()"], correct: 1 },
+  { q: "ماذا يحدث إذا لم ينادِ Middleware دالة next()؟", options: ["يتابع تلقائياً", "يتعلق الطلب (ما يرجع رد)", "يرجع خطأ 500", "يتجاوز الـ Route"], correct: 1 },
+  { q: "أي دالة تضيف Middleware لكل المسارات؟", options: ["app.get()", "app.use()", "app.post()", "app.route()"], correct: 1 },
+  { q: "أي Middleware في المثال يحمي مسار /api/admin؟", options: ["logging", "protect", "errorHandler", "express.json"], correct: 1 },
+];
+const authQuestions = [
+  { q: "لماذا نشفر كلمة السر قبل تخزينها؟", options: ["عشان نخليها أسرع", "عشان لو تسربت قاعدة البيانات ما يعرفوها", "عشان تقل مساحتها", "هذا غير ضروري"], correct: 1 },
+  { q: "ماذا تخزن في قاعدة البيانات بدلاً من كلمة السر؟", options: ["نص كلمة السر", "Hash", "ID", "Token"], correct: 1 },
+  { q: "ماذا تستخدم لتوليد التوكن؟", options: ["bcrypt", "express.json", "crypto.randomBytes", "Math.random"], correct: 2 },
+  { q: "أي Status Code عند فشل المصادقة؟", options: ["400", "401", "403", "404"], correct: 1 },
+  { q: "كيف يرسل العميل التوكن؟", options: ["في Body", "في URL", "في Header Authorization", "في Query"], correct: 2 },
+];
+const validationQuestions = [
+  { q: "لماذا نتحقق من البيانات؟", options: ["عشان نحسن الأداء", "لأن المستخدم قد يرسل بيانات خاطئة", "هذا اختياري", "عشان نزود التعقيد"], correct: 1 },
+  { q: "أي Status Code عند فشل التحقق؟", options: ["400", "401", "422", "500"], correct: 2 },
+  { q: "ماذا يعني التحقق من الطول؟", options: ["نتأكد أن الطول بين حدين", "نقيس وقت الاستجابة", "نتأكد من وجود البيانات", "لا شيء"], correct: 0 },
+  { q: "أفضل مكان للتحقق من البيانات؟", options: ["في قاعدة البيانات", "في السيرفر قبل المعالجة", "في العميل فقط", "ما يحتاج تحقق"], correct: 1 },
+  { q: "422 Unprocessable Entity يعني؟", options: ["تم بنجاح", "البيانات مفهومة لكن غير صالحة", "غير مصرح", "غير موجود"], correct: 1 },
+];
+
+// ===== Reusable Quiz & Challenge Components =====
+function Quiz({ questions }) {
+  const [current, setCurrent] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [selected, setSelected] = useState(null);
+  const [showResult, setShowResult] = useState(false);
+  const next = () => {
+    if (current < questions.length - 1) { setCurrent(current + 1); setSelected(null); }
+    else setShowResult(true);
+  };
+  const restart = () => { setCurrent(0); setAnswers({}); setSelected(null); setShowResult(false); };
+  if (showResult) {
+    const score = questions.filter((q, i) => answers[i] === q.correct).length;
+    return <div className="result-box"><h4 style={{textAlign:"center",marginBottom:"8px"}}>📊 النتيجة: {score}/{questions.length}</h4>{questions.map((q,i) => <div key={i} style={{fontSize:13,padding:"4px 0",borderBottom:"1px solid var(--border)"}}><strong>{q.q}</strong> <span>{answers[i]===q.correct?"✅":"❌"}</span> <span className="muted">(الإجابة: {q.options[q.correct]})</span></div>)}<button onClick={restart} className="btn-p" style={{marginTop:"8px",width:"100%"}}>🔄 إعادة الاختبار</button></div>;
+  }
+  const q = questions[current];
+  return <div>
+    <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"10px"}}>
+      <span style={{fontSize:"13px",color:"var(--accent2)",fontWeight:600}}>{current+1}/{questions.length}</span>
+      <div style={{flex:1,height:"4px",background:"var(--border)",borderRadius:"2px",overflow:"hidden"}}>
+        <div style={{height:"100%",width:`${((current+1)/questions.length)*100}%`,background:"var(--accent)",transition:"0.3s"}} />
+      </div>
+    </div>
+    <p style={{fontSize:"15px",fontWeight:500,marginBottom:"10px",color:"var(--heading)"}}>{q.q}</p>
+    <div style={{display:"flex",flexDirection:"column",gap:"6px"}}>
+      {q.options.map((opt,i) => <button key={i} onClick={()=>{setSelected(i);setAnswers({...answers,[current]:i})}} disabled={answers[current]!==undefined}
+        style={{padding:"10px 14px",borderRadius:"var(--radius-sm)",border:"1px solid",textAlign:"right",fontSize:"14px",cursor:answers[current]===undefined?"pointer":"default",fontFamily:"inherit",transition:"0.2s",
+          background:answers[current]!==undefined?(i===q.correct?"rgba(0,210,160,0.12)":(selected===i?"rgba(255,107,107,0.12)":"rgba(3,3,8,0.5)")):(selected===i?"rgba(108,92,231,0.12)":"rgba(3,3,8,0.5)"),
+          borderColor:answers[current]!==undefined?(i===q.correct?"var(--success)":(selected===i?"var(--danger)":"var(--border)")):(selected===i?"var(--accent)":"var(--border)"),
+          color:answers[current]!==undefined?(i===q.correct?"var(--success)":(selected===i?"var(--danger)":"var(--text)")):"var(--text)"}}>
+        {opt}
+      </button>)}
+    </div>
+    {answers[current]!==undefined && <div style={{textAlign:"center",marginTop:"8px"}}>
+      <p style={{color:selected===q.correct?"var(--success)":"var(--danger)",fontWeight:600,fontSize:"14px",marginBottom:"6px"}}>{selected===q.correct?"✅ إجابة صحيحة!":"❌ إجابة خاطئة"}</p>
+      <button onClick={next} className="btn-p" style={{width:"100%"}}>{current<questions.length-1?"⬅️ السؤال التالي":"📊 النتيجة"}</button>
+    </div>}
+  </div>;
+}
+function Challenge({ task, hint, solution }) {
+  const [showHint, setShowHint] = useState(false);
+  const [showSolution, setShowSolution] = useState(false);
+  return <div className="challenge-box">
+    <h4 style={{color:"var(--warning)",marginBottom:"6px"}}>⚡ التحدي</h4>
+    <p style={{fontSize:"14px",marginBottom:"8px"}}>{task}</p>
+    <div className="dual-btn"><button onClick={()=>setShowHint(!showHint)}>💡 {showHint?"إخفاء":"إظهار"} تلميح</button><button onClick={()=>setShowSolution(!showSolution)}>👀 {showSolution?"إخفاء":"إظهار"} الحل</button></div>
+    {showHint && <div className="result-box" style={{marginTop:"6px",fontSize:"13px"}}><strong>💡 تلميح:</strong> {hint}</div>}
+    {showSolution && <div className="result-box" style={{marginTop:"6px"}}><strong>👀 الحل:</strong><Code code={solution} /></div>}
+  </div>;
+}
 
 // ============================================
 // 🌐 1. INTRO - أساسيات API
@@ -294,8 +414,9 @@ app.listen(5000, () => {
       <p className="hint" style={{marginTop:8}}>👇 جرب تضغط على زر الإرسال — أول API لك يشتغل!</p>
       <Terminal method="GET" url={`${API}/api/hello`} />
     </Box>
+    <Box title="📝 اختبار المقدمة"><Quiz questions={introQuestions} /></Box>
   </Page>;
-}
+  }
 
 // ===== Methods Inline Playground =====
 function MPMethods() {
@@ -349,7 +470,7 @@ function MPMethods() {
 // ============================================
 // 📡 2. METHODS - أساليب الطلب الخمسة
 // ============================================
-function Methods() {
+function Methods({ onNavigate }) {
   return <Page title="📡 HTTP Methods" sub="✦ 5 طرق تتحدث بها مع السيرفر ✦">
     
     {/* ----- المبدأ ----- */}
@@ -489,8 +610,10 @@ app.delete('/api/users/:id', (req, res) => {
       <p style={{marginBottom:8,fontSize:13,color:"var(--accent2)"}}>اضغط على أي Method وشوف النتيجة في التيرمنل👇</p>
       <MPMethods />
     </Box>
+    <TrainingLink onClick={() => onNavigate("practice-methods")} label="🎯 اذهب إلى تدريب Methods" />
+    <Box title="📝 اختبار Methods"><Quiz questions={methodsQuestions} /></Box>
   </Page>;
-}
+  }
 
 // ============================================
 // 📦 3. REQUEST - كيف ترسل البيانات للسيرفر
@@ -639,8 +762,9 @@ app.get('/api/admin', (req, res) => {
 //    User-Agent: Mozilla/5.0... (المتصفح)`} />
       <Terminal method="GET" url={`${API}/api/request/headers`} />
     </Box>
+    <Box title="📝 اختبار الطلب"><Quiz questions={requestQuestions} /></Box>
   </Page>;
-}
+  }
 
 // ============================================
 // 📊 4. STATUS
@@ -665,13 +789,14 @@ function Status() {
     {statusRes && <div className="result-box"><pre style={{fontSize:13}}>{JSON.stringify(statusRes.data, null, 2)}</pre><button className="mp-close" onClick={() => setStatusRes(null)}>✕</button></div>}
     </Box>
     <Box title="القاعدة"><p>الـ Client يتأكد من <code>res.ok</code> (false لـ 4xx و 5xx):</p><Code code={`fetch('/api/data')\n  .then(async r => {\n    const data = await r.json();\n    if (!r.ok) {\n      console.error('خطأ:', data.error);\n      return;\n    }\n    console.log('نجاح:', data);\n  });`} /></Box>
+    <Box title="📝 اختبار حالات الاستجابة"><Quiz questions={statusQuestions} /></Box>
   </Page>;
-}
+  }
 
 // ============================================
 // 📝 5. CRUD - تطبيق المهام الكامل
 // ============================================
-function Crud() {
+function Crud({ onNavigate }) {
   const [list, setList] = useState([]);
   const [title, setTitle] = useState("");
   const load = async () => { const r = await fetch(`${API}/api/crud/items`); setList((await r.json()).data || []); };
@@ -773,8 +898,10 @@ app.delete('/api/items/:id', (req, res) => {
       <div className="todo-add"><input value={title} onChange={e => setTitle(e.target.value)} placeholder="مهمة جديدة..." onKeyDown={e => e.key === "Enter" && add()} /><button onClick={add}>➕ إضافة</button><button onClick={reset} className="btn-ghost">🔄 إعادة</button></div>
       <div className="todo-list">{list.map(i => <div key={i.id} className={`todo-item ${i.done ? "done" : ""}`}><span onClick={() => toggle(i.id, i.done)}>{i.done ? "✅" : "⬜"} {i.title}</span><button onClick={() => remove(i.id)} className="btn-del">🗑️</button></div>)}{list.length === 0 && <p className="muted">لا توجد مهام</p>}</div>
     </Box>
+    <TrainingLink onClick={() => onNavigate("practice-crud")} label="🎯 اذهب إلى تدريب CRUD" />
+    <Box title="📝 اختبار CRUD"><Quiz questions={crudQuestions} /></Box>
   </Page>;
-}
+  }
 
 // ===== Middleware Inline Playground =====
 function MPMiddleware() {
@@ -906,13 +1033,14 @@ app.get('/api/admin', protect, (req, res) => {
     <Box title="🧪 جرب — بدون توكن vs مع توكن">
       <MPMiddleware />
     </Box>
+    <Box title="📝 اختبار Middleware"><Quiz questions={middlewareQuestions} /></Box>
   </Page>;
-}
+  }
 
 // ============================================
 // 🔐 7. AUTH - المصادقة (تسجيل + دخول)
 // ============================================
-function Auth() {
+function Auth({ onNavigate }) {
   const [u, setU] = useState(""); const [p, setP] = useState(""); const [msg, setMsg] = useState("");
   const reg = async () => { const r = await fetch(`${API}/api/auth/register`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: u, password: p }) }); setMsg(JSON.stringify(await r.json(), null, 2)); };
   const login = async () => { const r = await fetch(`${API}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: u, password: p }) }); setMsg(JSON.stringify(await r.json(), null, 2)); };
@@ -1000,8 +1128,10 @@ app.post('/api/auth/login', async (req, res) => {
       <div className="dual-btn"><button onClick={reg}>📝 تسجيل</button><button onClick={login}>🔑 دخول</button></div>
       {msg && <pre className="result-box">{msg}</pre>}
     </Box>
+    <TrainingLink onClick={() => onNavigate("practice-auth")} label="🎯 اذهب إلى تدريب Auth" />
+    <Box title="📝 اختبار المصادقة"><Quiz questions={authQuestions} /></Box>
   </Page>;
-}
+  }
 
 // ============================================
 // 🔑 8. PASSWORDS
@@ -1124,7 +1254,7 @@ function RateLimit() {
 // ============================================
 // ✅ 14. VALIDATION - التحقق من صحة البيانات
 // ============================================
-function Validation() {
+function Validation({ onNavigate }) {
   const [form, setForm] = useState({ name: "", email: "", age: "", password: "" });
   const [res, setRes] = useState(null);
   const submit = async () => {
@@ -1233,8 +1363,10 @@ app.post('/api/register', (req, res) => {
       <button onClick={submit} className="btn-p">✅ تحقق وسجل</button>
       {res && <div className="result-box">{JSON.stringify(res, null, 2)}</div>}
     </Box>
+    <TrainingLink onClick={() => onNavigate("practice-validation")} label="🎯 اذهب إلى تدريب Validation" />
+    <Box title="📝 اختبار Validation"><Quiz questions={validationQuestions} /></Box>
   </Page>;
-}
+  }
 
 // ============================================
 // 💾 15. CACHING
@@ -1507,6 +1639,144 @@ function Deploy() {
       <li><strong>.env:</strong> خزن التوكنات في Environment Variables</li>
       <li><strong>Logging:</strong> سجل الأخطاء عشان تكتشفها</li>
       <li><strong>Health Check:</strong> أضف <code>GET /api/health</code> ترجع OK</li>
+    </ul></Box>
+  </Page>;
+}
+
+// ============================================
+// 🎯 تدريب METHODS - تمرن على الـ 5 Methods
+// ============================================
+function PracticeMethods() {
+  const [logs, setLogs] = useState([]);
+  const [url, setUrl] = useState(`${API}/api/methods/get`);
+  const [method, setMethod] = useState("GET");
+  const [body, setBody] = useState("");
+  const send = async () => {
+    try {
+      const opts = { method, headers: { "Content-Type": "application/json" } };
+      if (body && method !== "GET") opts.body = body;
+      const r = await fetch(url, opts);
+      const data = await r.json();
+      setLogs(prev => [{ method, url, status: r.status, data, time: new Date().toLocaleTimeString() }, ...prev.slice(0, 9)]);
+    } catch (e) { setLogs(prev => [{ method, url, error: e.message, time: new Date().toLocaleTimeString() }, ...prev.slice(0, 9)]); }
+  };
+  return <Page title="🎯 تدريب Methods" sub="‍جرب الـ 5 Methods بنفسك">
+    <Box title="🎯 التمرين"><p>أرسل طلبات GET و POST و PUT و PATCH و DELETE ولاحظ الفرق في الاستجابة.</p></Box>
+    <Box title="🧪 منصة التجربة">
+      <div className="term-method-row"><select value={method} onChange={e => setMethod(e.target.value)} className="term-select">
+        {["GET","POST","PUT","PATCH","DELETE"].map(m => <option key={m} value={m}>{m}</option>)}
+      </select><input value={url} onChange={e => setUrl(e.target.value)} className="term-url-input" /></div>
+      {method !== "GET" && <textarea value={body} onChange={e => setBody(e.target.value)} rows={2} placeholder='{"key":"value"}' className="term-body-input" />}
+      <button onClick={send} className="btn-p" style={{marginTop:"6px",width:"100%"}}>🚀 أرسل</button>
+      {logs.length > 0 && <div className="term-log" style={{marginTop:"8px",maxHeight:"200px"}}>{logs.map((l,i) => <div key={i} className={`term-entry ${i>0?"history":""}`}>
+        <div className="term-curl"><span className="term-prompt">$</span> {l.method} <span className="term-url">{l.url}</span> <span className="terminal-time">{l.time}</span></div>
+        {l.error ? <div className="term-line" style={{color:"var(--danger)"}}>⛔ {l.error}</div> : <><div className="term-sep" style={{color:l.status<400?"var(--success)":"var(--danger)"}}>◀ {l.status}</div><pre className="term-json">{JSON.stringify(l.data,null,2)}</pre></>}
+      </div>)}</div>}
+    </Box>
+    <Box title="💡 نصائح"><ul>
+      <li>استخدم <strong>GET</strong> لقراءة البيانات (الرابط الأساسي)</li>
+      <li>استخدم <strong>POST</strong> لإنشاء شيء جديد (أضف Body)</li>
+      <li>استخدم <strong>PUT</strong> لاستبدال مورد (حدد id في الرابط)</li>
+      <li>استخدم <strong>PATCH</strong> لتحديث جزء (حدد id + Body)</li>
+      <li>استخدم <strong>DELETE</strong> لحذف مورد (حدد id في الرابط)</li>
+    </ul></Box>
+  </Page>;
+}
+
+// ============================================
+// 🎯 تدريب CRUD - تمرن على CRUD كامل
+// ============================================
+function PracticeCrud() {
+  const [list, setList] = useState([]);
+  const [title, setTitle] = useState("");
+  const [editId, setEditId] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const load = async () => { const r = await fetch(`${API}/api/crud/items`); setList((await r.json()).data || []); };
+  const add = async () => { if (!title.trim()) return; await fetch(`${API}/api/crud/items`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: title.trim() }) }); setTitle(""); load(); };
+  const toggle = async (id, done) => { await fetch(`${API}/api/crud/items/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ done: !done }) }); load(); };
+  const remove = async (id) => { await fetch(`${API}/api/crud/items/${id}`, { method: "DELETE" }); load(); };
+  const startEdit = (item) => { setEditId(item.id); setEditTitle(item.title); };
+  const saveEdit = async () => { if (!editTitle.trim()) return; await fetch(`${API}/api/crud/items/${editId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: editTitle.trim() }) }); setEditId(null); load(); };
+  const reset = async () => { await fetch(`${API}/api/reset`, { method: "POST" }); load(); };
+  useEffect(() => { load(); }, []);
+  return <Page title="🎯 تدريب CRUD" sub="‍أنشئ، اقرأ، حدث، احذف">
+    <Box title="🎯 التمرين"><p>طبّق عمليات CRUD الأربع بنفسك. أضف مهمة، بدّل حالتها، عدّل عنوانها، احذفها.</p></Box>
+    <Box title="🧪 منصة التجربة">
+      <div className="todo-add"><input value={title} onChange={e => setTitle(e.target.value)} placeholder="عنوان المهمة الجديدة" onKeyDown={e => e.key === "Enter" && add()} /><button onClick={add}>➕ إضافة</button><button onClick={reset} className="btn-ghost">🔄 إعادة</button></div>
+      <div className="todo-list">{list.map(i => <div key={i.id} className={`todo-item ${i.done ? "done" : ""}`}>
+        {editId === i.id ? <div style={{display:"flex",gap:"6px",flex:1}}><input value={editTitle} onChange={e => setEditTitle(e.target.value)} style={{flex:1,padding:"6px 10px",background:"rgba(3,3,8,0.5)",border:"1px solid var(--border)",borderRadius:"6px",color:"var(--text-bright)",fontSize:"13px"}} /><button onClick={saveEdit} className="btn-p" style={{padding:"6px 12px",fontSize:"12px",minHeight:"auto"}}>💾</button><button onClick={() => setEditId(null)} style={{background:"transparent",border:"1px solid var(--border)",borderRadius:"6px",color:"var(--text)",padding:"6px 10px",cursor:"pointer"}}>✕</button></div>
+        : <><span onClick={() => toggle(i.id, i.done)} style={{flex:1,cursor:"pointer"}}>{i.done ? "✅" : "⬜"} {i.title}</span><button onClick={() => startEdit(i)} style={{background:"transparent",border:"none",color:"var(--accent2)",cursor:"pointer",fontSize:"13px",padding:"4px 8px"}}>✏️</button><button onClick={() => remove(i.id)} className="btn-del">🗑️</button></>}
+      </div>)}{list.length === 0 && <p className="muted">لا توجد مهام</p>}</div>
+    </Box>
+    <Box title="💡 نصائح">
+      <p><strong>C</strong>reate → POST · <strong>R</strong>ead → GET · <strong>U</strong>pdate → PATCH/PUT · <strong>D</strong>elete → DELETE</p>
+    </Box>
+  </Page>;
+}
+
+// ============================================
+// 🎯 تدريب AUTH - تمرن على المصادقة
+// ============================================
+function PracticeAuth() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [msg, setMsg] = useState("");
+  const [token, setToken] = useState("");
+  const [middlewareRes, setMiddlewareRes] = useState(null);
+  const reg = async () => { const r = await fetch(`${API}/api/auth/register`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username, password }) }); const d = await r.json(); setMsg(JSON.stringify(d, null, 2)); };
+  const login = async () => { const r = await fetch(`${API}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username, password }) }); const d = await r.json(); setMsg(JSON.stringify(d, null, 2)); if (d.token) setToken(d.token); };
+  const testToken = async () => {
+    if (!token) { setMiddlewareRes({ error: "لا يوجد توكن — سجل دخول أولاً" }); return; }
+    const r = await fetch(`${API}/api/middleware/auth`, { headers: { "Authorization": `Bearer ${token}` } });
+    setMiddlewareRes({ status: r.status, data: await r.json() });
+  };
+  return <Page title="🎯 تدريب Auth" sub="‍سجّل، ادخل، واستخدم التوكن">
+    <Box title="🎯 التمرين"><p>1. سجّل مستخدم جديد. 2. ادخل بنفس البيانات. 3. استخدم التوكن لاختبار Middleware.</p></Box>
+    <Box title="🧪 منصة التجربة">
+      <input value={username} onChange={e => setUsername(e.target.value)} placeholder="اسم المستخدم" />
+      <input value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder="كلمة السر" />
+      <div className="dual-btn"><button onClick={reg}>📝 تسجيل</button><button onClick={login}>🔑 دخول</button></div>
+      {msg && <pre className="result-box">{msg}</pre>}
+    </Box>
+    {token && <Box title="🔐 التوكن">
+      <pre className="result-box" style={{wordBreak:"break-all",fontSize:"12px"}}>{token}</pre>
+      <button onClick={testToken} className="btn-p" style={{width:"100%",marginTop:"6px"}}>🔐 اختبر التوكن مع Middleware</button>
+      {middlewareRes && <div className="result-box" style={{marginTop:"6px"}}><strong>{middlewareRes.status === 200 ? "✅ ناجح" : "❌ فشل"}</strong><pre>{JSON.stringify(middlewareRes.data, null, 2)}</pre></div>}
+    </Box>}
+    <Box title="💡 نصائح"><ul>
+      <li>كلمة السر تُشفر بـ <strong>bcrypt</strong> قبل التخزين — لا تخزنها نصاً أبداً</li>
+      <li>التوكن يُرسل في <code>Authorization: Bearer &lt;token&gt;</code></li>
+      <li>السيرفر يتحقق من التوكن في Middleware مخصص</li>
+    </ul></Box>
+  </Page>;
+}
+
+// ============================================
+// 🎯 تدريب VALIDATION - تمرن على التحقق من البيانات
+// ============================================
+function PracticeValidation() {
+  const [form, setForm] = useState({ name: "", email: "", age: "", password: "", confirmPassword: "" });
+  const [res, setRes] = useState(null);
+  const submit = async () => {
+    const r = await fetch(`${API}/api/validation/register`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+    setRes(await r.json());
+  };
+  return <Page title="🎯 تدريب Validation" sub="‍تحقق من صحة البيانات">
+    <Box title="🎯 التمرين"><p>املأ النموذج واشوف إن كان السيرفر سيقبل بياناتك أو يرد بأخطاء التحقق.</p></Box>
+    <Box title="🧪 منصة التجربة">
+      <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="الاسم (حرفين على الأقل)" />
+      <input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="الإيميل (يحتوي @)" />
+      <input value={form.age} onChange={e => setForm({ ...form, age: e.target.value })} type="number" placeholder="العمر (13-120)" />
+      <input value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} type="password" placeholder="كلمة السر (6 أحرف على الأقل)" />
+      <input value={form.confirmPassword} onChange={e => setForm({ ...form, confirmPassword: e.target.value })} type="password" placeholder="تأكيد كلمة السر" />
+      <button onClick={submit} className="btn-p" style={{width:"100%"}}>✅ تحقق وسجل</button>
+      {res && <div className="result-box">{JSON.stringify(res, null, 2)}</div>}
+    </Box>
+    <Box title="💡 نصائح"><ul>
+      <li>تحقق من <strong>وجود</strong> الحقل قبل استخدامه</li>
+      <li>تحقق من <strong>الطول</strong> (مثلاً الاسم ≥ حرفين)</li>
+      <li>تحقق من <strong>الصيغة</strong> (مثلاً الإيميل يحتوي @)</li>
+      <li>تحقق من <strong>النطاق</strong> (مثلاً العمر بين 13 و 120)</li>
     </ul></Box>
   </Page>;
 }
